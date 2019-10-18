@@ -47,18 +47,75 @@
         newTodoTitle = '';
     }
 
-    function removeTodo() {
-
+    function removeTodo(event) {
+        todos = todos.filter(todo => todo.id !== event.detail.id);
     }
 
-    function toggleComplete() {
+    function toggleComplete(event) {
+        todos = todos.map((todo) => {
+            if (todo.id === event.detail.id) {
+                todo.completed = !todo.completed;
 
+                return todo;
+            }
+
+            return todo;
+        });
+    }
+
+    function checkAllTodos(event) {
+        todos = todos.map(todo => todo = {id: todo.id, title: todo.title, completed: event.target.checked});
+    }
+
+    function updateFilter(newFilter) {
+        currentFilter = newFilter;
+    }
+
+    function clearCompleted() {
+        todos = todos.filter(todo => !todo.completed)
     }
 </script>
 
-<div class="container">
-    <img src={'/img/TaironeLogo.png'} alt="Logo">
+<style>
+    .container {
+        max-width: 800px;
+        margin: 10px auto;
+    }
+    .todo-input {
+        width: 100%;
+        padding: 10px, 20px;
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+    .inner-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 16px;
+        border-top: 1px solid lightgrey;
+        padding-top: 15px;
+        margin-bottom: 13px;
+    }
+    .inner-container-input {
+        margin-right: 12px;
+    }
+    button {
+        font-size: 14px;
+        background-color: white;
+        appearance: none;
+    }
+    button:hover {
+        background: lightseagreen;
+    }
+    button:focus {
+        outline: none;
+    }
+    .active {
+        background: lightseagreen;
+    }
+</style>
 
+<div class="container">
     <h2>Svelte Todo App</h2>
     <input type="text" class="todo-input" id="todoInput" placeholder="Insert some todo item"
            bind:value={newTodoTitle} on:keydown={addTodo} >
@@ -66,7 +123,7 @@
     {#each filteredTodos as todo}
         <div class="todo-item">
             <TodoItem {...todo} 
-                on:deleteTodo={removeTodo}
+                on:removeTodo={removeTodo}
                 on:toggleComplete={toggleComplete}
             />
         </div>
@@ -74,12 +131,18 @@
 
     <div class="inner-container">
         <div>
-            <label for="checkTodos">Check All</label>
-            <input type="checkbox" id="checkTodos" class="inner-container-input"
-             on:change={checkAllTodos}>
+            <label for="checkTodos">
+                <input type="checkbox" id="checkTodos" 
+                class="inner-container-input"
+                on:change={checkAllTodos}> Check All
+            </label>
         </div>
         <div>
-            {todosRemaining} items left!
+            {#if todosRemaining === 0}
+                All todos completed!
+            {:else}
+                {todosRemaining} items left!
+            {/if}
         </div>
     </div>
 
